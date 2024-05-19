@@ -196,7 +196,6 @@ void loop() {
           }
         }
 
-      
         //if cue command is in command "library", run the actions in the command
         if (commandIndex >= 0) {
           Serial.print(" Command ");
@@ -285,7 +284,7 @@ void loop() {
                         Serial.print(" ");
                         Serial.print(commands[commandIndex].actions[i].value);
                         Serial.print(" complete: ");          
-                        printServoVsalues();
+                        printServoValues();
                       }
 
                       Serial.print(i);
@@ -330,12 +329,12 @@ void loop() {
     char input = Serial.read();
 
     if (input == 'p') {
-      printServoVsalues();
+      printServoValues();
     }
   }
 }
 
-void printServoVsalues() {
+void printServoValues() {
       //Serial.println("nod, shake, eyes-hori, eyes-vert, eyelids, top-lip, bottom-lip");
       Serial.print("{");
       for (int i=0; i < NUM_SERVOS; i++) {
@@ -347,6 +346,7 @@ void printServoVsalues() {
       Serial.println("}");
 
 }
+
 int angleToPulse(int ang){
    int pulse = map(ang,0, 180, SERVOMIN,SERVOMAX);// map angle of 0 to 180 to Servo min and Servo max 
   // Serial.print("Angle: ");Serial.print(ang);
