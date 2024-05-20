@@ -6,3 +6,5 @@ class OhBot {
 	public:
 		int getMode();
 };
+
+#endif
