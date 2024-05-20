@@ -3,6 +3,9 @@
 
 #include <Easing.h>
 
+#include "ohbot.hpp"
+
+
 // called this way, it uses the default address 0x40
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 // you can also call it with a different address you want
@@ -46,29 +49,36 @@ ServoProps servoProps[NUM_SERVOS] = {
   {0, 0, 120, 55, 0}, //head turn
   {1, 0, 80, 50, -15}, //head nod
   {8, 20, 100, 55, 0}, //eyes horizontal
-  {3, 55, 115, 85, 0}, //eyes vertical
+  {3, 35, 115, 55, 0}, //eyes vertical
   {4, 0, 40, 25, 0}, //eyelids
-  {5, 0, 45, 30, -20}, //top lip
+  {5, 0, 45, 35, -20}, //top lip
   {6, 20, 65, 50, 0}, //bottom lip
 };
 
+#define MAX_NAME_SIZE 12
 //named pose list
 typedef struct {
+  char name[MAX_NAME_SIZE];
   int servoValues[NUM_SERVOS];
 } Pose;
 
-#define POSE_LIST_SIZE 1
+#define POSE_LIST_SIZE 50
 Pose poses[] = {
-  {-1, -1, -1, -1, servoProps[4].maxAng + servoProps[4].offset, -1, -1},//close eyes
-};
-
-String poseNameLookup[] = {
-  "close eyes",
+  {"blink",{-1, -1, -1, -1, servoProps[4].minAng, -1, -1}},
+  {"turn right",{servoProps[0].minAng, -1, -1, -1, -1, -1, -1}},
+  {"turn left",{servoProps[0].maxAng , -1, -1, -1, -1, -1, -1}},
+  {"nod up",{-1, servoProps[1].minAng , -1, -1, -1, -1, -1}},
+  {"nod down",{-1, servoProps[1].maxAng , -1, -1, -1, -1, -1}},
+  {"look up",{-1, -1, -1, servoProps[3].maxAng , -1, -1, -1}},
+  {"look down",{-1, -1, -1, servoProps[3].minAng , -1, -1, -1}},
+  {"look right",{-1, -1, servoProps[2].minAng, -1 , -1, -1, -1}},
+  {"look left",{-1, -1, servoProps[2].maxAng, -1 , -1, -1, -1}},
+  {"smile", {-1, -1, -1, -1, -1, servoProps[5].maxAng, 30}},
 };
 
 //action list-item object
 typedef struct {
-  String name;
+  char poseName[MAX_NAME_SIZE];
   int value;
   int timestamp;
   int duration;
@@ -76,29 +86,52 @@ typedef struct {
   bool complete;
 } Action;
 
-#define ACTION_LIST_SIZE 10
+#define ACTION_LIST_SIZE 20
 
 //command object
 typedef struct {
-  String name;
+  char name[MAX_NAME_SIZE];
   Action actions[ACTION_LIST_SIZE];
   int timestamp;
 } Command;
 
-#define COMMAND_LIST_SIZE 20
-Command commands[COMMAND_LIST_SIZE];
+#define COMMAND_LIST_SIZE 100
+Command commands[COMMAND_LIST_SIZE] = {
+  {"blink", {{"blink", 100, 0, 50}, {"blink", 0, 100, 50}} },
+  {"look1", {
+      {"look right", 30, 0, 500},
+      {"look up", 100, 0, 500},
+      {"turn right", 54, 550, 300},
+      {"nod up", 50, 550, 300},
+      {"look right", 15, 550, 300},
+      {"look up", 67, 550, 300},
+      {"look left", 40, 1500, 50},
+      {"look right", 15, 2000, 50},
+      {"look left", 40, 2700, 50},
+      {"look right", 15, 3500, 50},
+      //{"nod up", 60, 4500, 1000},
+      {"smile", 100, 4500, 1000},
+      {"look up", 30, 4500, 1000},
+    }
+  }
+};
 
 //cue object
 typedef struct {
   int timestamp;
-  String commands[COMMAND_LIST_SIZE];
+  char commands[COMMAND_LIST_SIZE][MAX_NAME_SIZE];
   bool complete;
   bool started;
 } Cue;
 
-#define CUE_LIST_SIZE 10
-#define CUE_TIME_WINDOW 300
-Cue cues[CUE_LIST_SIZE]; 
+#define CUE_LIST_SIZE 20
+Cue cues[CUE_LIST_SIZE] = {
+  {1000, {"blink"}},
+  {1000, {"look1"}},
+  {3000, {"blink"}},
+  {4000, {"blink"}},
+  {4500, {"blink"}},
+};
 
 void setup() {
   Serial.begin(115200);
@@ -108,13 +141,6 @@ void setup() {
     servoProps[i].currentAng = servoProps[i].restAng + servoProps[i].offset;
   }
 
-  //command definitions
-  commands[0] = {name:"blink", actions:{{"eyelids", -100, 1000, 50}, {"eyelids", 0, 1100, 50}} };
-  
-  //sample cues
-  cues[0] = {timestamp:1000, commands:{"blink"}};
-  cues[1] = {timestamp:3000, commands:{"blink"}};
-  cues[2] = {timestamp:5000, commands:{"blink"}};
   
   qdo.scale(1);
 
@@ -167,18 +193,19 @@ void loop() {
       for (int cci=0; cci < COMMAND_LIST_SIZE; cci++) {
         int commandIndex = -1;
         for (int ci=0; ci < COMMAND_LIST_SIZE; ci++) {
-          if ((cues[c].commands[cci] != "") && cues[c].commands[cci].equals(commands[ci].name)) {
+          if ((strlen(cues[c].commands[cci]) > 0) && (strcmp(cues[c].commands[cci], commands[ci].name) == 0)) {
             commandIndex = ci;
             break;
           }
         }
-      
+
         //if cue command is in command "library", run the actions in the command
         if (commandIndex >= 0) {
           Serial.print(" Command ");
           Serial.print(commandIndex);
-          Serial.print(" received ("  + commands[commandIndex].name + ") ");
-          Serial.println(now);
+          Serial.print(" received (");
+          Serial.print(commands[commandIndex].name);
+          Serial.print(") ");
 
           //reset action-complete flags the first time thru the cue
           if (!cues[c].started) {
@@ -190,23 +217,30 @@ void loop() {
           }
 
           for (int i=0; i < ACTION_LIST_SIZE; i++) {
-            if ((commands[commandIndex].actions[i].name != "") && !commands[commandIndex].actions[i].complete) {
+            if ((strlen(commands[commandIndex].actions[i].poseName) > 0) && !commands[commandIndex].actions[i].complete) {
               //trigger action if now is greater than timestamp and less than duration 
               //Serial.print(">");
-              //Serial.print(actions[i].timestamp);
-              //Serial.print(" ");
+              Serial.print(commands[commandIndex].actions[i].poseName);
+              Serial.print(" ");
+              Serial.print(now);
+              Serial.print(" ");
+              Serial.print(commands[commandIndex].actions[i].timestamp + cues[c].timestamp);
+              Serial.print("-");
+              Serial.print(commands[commandIndex].actions[i].timestamp + commands[commandIndex].actions[i].duration + cues[c].timestamp);
+              Serial.print(" ");
+
               if ((now >= commands[commandIndex].actions[i].timestamp + cues[c].timestamp) && 
                   (now <= commands[commandIndex].actions[i].timestamp + commands[commandIndex].actions[i].duration + cues[c].timestamp)
-                  ) {
+                 ) {
                 //find pose in pose list
                 int poseIndex = 0;
                 for (int j=0; j < POSE_LIST_SIZE; j++) {
-                  if (commands[commandIndex].actions[i].name == poseNameLookup[j]) {
+                  if (strcmp(commands[commandIndex].actions[i].poseName, poses[j].name) == 0) {
                     poseIndex = j;
                     break;
                   }
                 }
-
+                
                 Pose pose = poses[poseIndex];
                 
                 //run action until it is complete
@@ -215,16 +249,24 @@ void loop() {
                     //calculate desired servo angle based on milliseconds ticked
                     // pos value: 100% * (max - rest) / 100 + rest + offset 
                     // neg value: -100% * (rest - min) / 100 + min + offset 
-                    int targetAng = commands[commandIndex].actions[i].value >= 0?
-                      (commands[commandIndex].actions[i].value * round(servoProps[j].maxAng - servoProps[j].restAng) / 100.) + servoProps[j].restAng + servoProps[j].offset :
-                      servoProps[j].restAng + (commands[commandIndex].actions[i].value * round(servoProps[j].restAng - servoProps[j].minAng) / 100.) + servoProps[j].offset;
+                    int targetAng = pose.servoValues[j] >= servoProps[j].restAng?
+                      (commands[commandIndex].actions[i].value * round(pose.servoValues[j] - servoProps[j].restAng) / 100.) + servoProps[j].restAng + servoProps[j].offset :
+                      (servoProps[j].restAng - commands[commandIndex].actions[i].value * round(servoProps[j].restAng - pose.servoValues[j]) / 100.) + servoProps[j].offset;
 
                     //easing function doesn't work if duration is < 200 ms
                     //so just complete the action;
                     int ang = targetAng;
+                
+                    Serial.print("target:");
+                    Serial.print(targetAng);
+                    Serial.print(" current:");
+                    Serial.print(servoProps[j].currentAng);
+                    Serial.print(" ");
+                    
                     if (commands[commandIndex].actions[i].duration < 200) {
                       servoProps[j].currentAng = targetAng;
                       commands[commandIndex].actions[i].complete = true;
+                      Serial.println(" ");
                     } else {
                       //set servo to eased value between current angle and target angle based on action duration
                       //(target - current) * easingFunction + current
@@ -232,8 +274,6 @@ void loop() {
 
                       float step = qdio.get((now - commands[commandIndex].actions[i].timestamp - cues[c].timestamp) / 1000.);
                       ang = round((targetAng - servoProps[j].currentAng)*step) + servoProps[j].currentAng;
-                      Serial.print((now - commands[commandIndex].actions[i].timestamp - cues[c].timestamp) / 1000.);
-                      Serial.print(" - ");
 
                       //when targetAngle is reached, set currentAng = targetAng;
                       if (ang == targetAng) {
@@ -242,7 +282,9 @@ void loop() {
 
                         Serial.print("cue [");
                         Serial.print(c);
-                        Serial.print("] " + commands[commandIndex].actions[i].name + " ");
+                        Serial.print("] ");
+                        Serial.print(commands[commandIndex].actions[i].poseName);
+                        Serial.print(" ");
                         Serial.print(commands[commandIndex].actions[i].value);
                         Serial.print(" complete: ");          
                         printServoValues();
@@ -275,6 +317,7 @@ void loop() {
               allActionsComplete &= commands[commandIndex].actions[i].complete;
             }
           }//*/
+          Serial.println(" ");
         }
       }
 
