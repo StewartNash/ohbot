@@ -196,7 +196,7 @@ void loop() {
                     Serial.print("target:");
                     Serial.print(targetAng);
                     Serial.print(" current:");
-                    Serial.print(servoProps[j].currentAng);
+                    Serial.print(myOhBot.servoProps[j].currentAng);
                     Serial.print(" ");
                     
                     if (commands[commandIndex].actions[i].duration < 200) {
@@ -280,7 +280,7 @@ void printServoValues() {
         if (i > 0) {
           Serial.print(", ");
         }
-        Serial.print(servoProps[i].currentAng);
+        Serial.print(myOhBot.servoProps[i].currentAng);
       }
       Serial.println("}");
 
