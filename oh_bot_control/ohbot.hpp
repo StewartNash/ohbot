@@ -52,7 +52,7 @@ typedef struct {
 
 class OhBot {		 
 	public:
-		ServoProps servoProps[NUM_SERVOS]//properties for each servo
+		ServoProps servoProps[NUM_SERVOS]; //properties for each servo
 		OhBot() : servoProps{
   			{0, 0, 120, 55, 0}, //head turn
   			{1, 0, 80, 50, -15}, //head nod
