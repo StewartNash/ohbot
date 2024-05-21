@@ -23,79 +23,31 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define USMAX  2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
 
-#define NUM_SERVOS 7
-
 EasingFunc<Ease::QuadOut> qdo;
 EasingFunc<Ease::QuadIn> qdi;
 EasingFunc<Ease::QuadInOut> qdio;
+
+OhBot myOhBot;
 
 bool timeInitiated = false; 
 int time0;
 
 int currentServoNum = 0;
 
-//servo properties object
-typedef struct {
-  int servoNum;
-  int minAng;
-  int maxAng;
-  int restAng;
-  int offset; //set if servo min < 0 so min angle is never negative
-  int currentAng;
-} ServoProps;
-
-//properties for each servo 
-ServoProps servoProps[NUM_SERVOS] = {
-  {0, 0, 120, 55, 0}, //head turn
-  {1, 0, 80, 50, -15}, //head nod
-  {8, 20, 100, 55, 0}, //eyes horizontal
-  {3, 35, 115, 55, 0}, //eyes vertical
-  {4, 0, 40, 25, 0}, //eyelids
-  {5, 0, 45, 35, -20}, //top lip
-  {6, 20, 65, 50, 0}, //bottom lip
-};
-
-#define MAX_NAME_SIZE 12
-//named pose list
-typedef struct {
-  char name[MAX_NAME_SIZE];
-  int servoValues[NUM_SERVOS];
-} Pose;
-
 #define POSE_LIST_SIZE 50
 Pose poses[] = {
-  {"blink",{-1, -1, -1, -1, servoProps[4].minAng, -1, -1}},
-  {"turn right",{servoProps[0].minAng, -1, -1, -1, -1, -1, -1}},
-  {"turn left",{servoProps[0].maxAng , -1, -1, -1, -1, -1, -1}},
-  {"nod up",{-1, servoProps[1].minAng , -1, -1, -1, -1, -1}},
-  {"nod down",{-1, servoProps[1].maxAng , -1, -1, -1, -1, -1}},
-  {"look up",{-1, -1, -1, servoProps[3].maxAng , -1, -1, -1}},
-  {"look down",{-1, -1, -1, servoProps[3].minAng , -1, -1, -1}},
-  {"look right",{-1, -1, servoProps[2].minAng, -1 , -1, -1, -1}},
-  {"look left",{-1, -1, servoProps[2].maxAng, -1 , -1, -1, -1}},
-  {"smile", {-1, -1, -1, -1, -1, servoProps[5].maxAng, 30}},
+  {"blink",{-1, -1, -1, -1, myOhBot.servoProps[4].minAng, -1, -1}},
+  {"turn right",{myOhBot.servoProps[0].minAng, -1, -1, -1, -1, -1, -1}},
+  {"turn left",{myOhBot.servoProps[0].maxAng , -1, -1, -1, -1, -1, -1}},
+  {"nod up",{-1, myOhBot.servoProps[1].minAng , -1, -1, -1, -1, -1}},
+  {"nod down",{-1, myOhBot.servoProps[1].maxAng , -1, -1, -1, -1, -1}},
+  {"look up",{-1, -1, -1, myOhBot.servoProps[3].maxAng , -1, -1, -1}},
+  {"look down",{-1, -1, -1, myOhBot.servoProps[3].minAng , -1, -1, -1}},
+  {"look right",{-1, -1, myOhBot.servoProps[2].minAng, -1 , -1, -1, -1}},
+  {"look left",{-1, -1, myOhBot.servoProps[2].maxAng, -1 , -1, -1, -1}},
+  {"smile", {-1, -1, -1, -1, -1, myOhBot.servoProps[5].maxAng, 30}},
 };
 
-//action list-item object
-typedef struct {
-  char poseName[MAX_NAME_SIZE];
-  int value;
-  int timestamp;
-  int duration;
-  int easing;
-  bool complete;
-} Action;
-
-#define ACTION_LIST_SIZE 20
-
-//command object
-typedef struct {
-  char name[MAX_NAME_SIZE];
-  Action actions[ACTION_LIST_SIZE];
-  int timestamp;
-} Command;
-
-#define COMMAND_LIST_SIZE 100
 Command commands[COMMAND_LIST_SIZE] = {
   {"blink", {{"blink", 100, 0, 50}, {"blink", 0, 100, 50}} },
   {"look1", {
@@ -116,14 +68,6 @@ Command commands[COMMAND_LIST_SIZE] = {
   }
 };
 
-//cue object
-typedef struct {
-  int timestamp;
-  char commands[COMMAND_LIST_SIZE][MAX_NAME_SIZE];
-  bool complete;
-  bool started;
-} Cue;
-
 #define CUE_LIST_SIZE 20
 Cue cues[CUE_LIST_SIZE] = {
   {1000, {"blink"}},
@@ -134,18 +78,12 @@ Cue cues[CUE_LIST_SIZE] = {
 };
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println("beginning...");
-
-  for (int i=0; i < NUM_SERVOS; i++) {
-    servoProps[i].currentAng = servoProps[i].restAng + servoProps[i].offset;
-  }
-
-  
-  qdo.scale(1);
-
-  pwm.begin();
-
+	Serial.begin(115200);
+  	Serial.println("beginning..."); 
+  	
+	qdo.scale(1);
+	
+  	pwm.begin();  
   /*
    * In theory the internal oscillator (clock) is 25MHz but it really isn't
    * that precise. You can 'calibrate' this by tweaking this number until
@@ -162,16 +100,14 @@ void setup() {
    * affects the calculations for the PWM update frequency. 
    * Failure to correctly set the int.osc value will cause unexpected PWM results
    */
-  pwm.setOscillatorFrequency(27000000);
-  pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
+	pwm.setOscillatorFrequency(27000000);
+	pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
 
-  delay(10);
+	delay(10);
 
-  //initially set the servos using the rest angle settings for each channel
-  for (int j=0; j < NUM_SERVOS; j++) {
-    pwm.setPWM(servoProps[j].servoNum, 0, angleToPulse(servoProps[j].restAng));
-  }
-
+	for (int j=0; j < NUM_SERVOS; j++) {
+		pwm.setPWM(myOhBot.servoProps[j].servoNum, 0, angleToPulse(myOhBot.servoProps[j].restAng));
+	}  
 }
 
 void loop() {
@@ -249,9 +185,9 @@ void loop() {
                     //calculate desired servo angle based on milliseconds ticked
                     // pos value: 100% * (max - rest) / 100 + rest + offset 
                     // neg value: -100% * (rest - min) / 100 + min + offset 
-                    int targetAng = pose.servoValues[j] >= servoProps[j].restAng?
-                      (commands[commandIndex].actions[i].value * round(pose.servoValues[j] - servoProps[j].restAng) / 100.) + servoProps[j].restAng + servoProps[j].offset :
-                      (servoProps[j].restAng - commands[commandIndex].actions[i].value * round(servoProps[j].restAng - pose.servoValues[j]) / 100.) + servoProps[j].offset;
+                    int targetAng = pose.servoValues[j] >= myOhBot.servoProps[j].restAng?
+                      (commands[commandIndex].actions[i].value * round(pose.servoValues[j] - myOhBot.servoProps[j].restAng) / 100.) + myOhBot.servoProps[j].restAng + myOhBot.servoProps[j].offset :
+                      (myOhBot.servoProps[j].restAng - commands[commandIndex].actions[i].value * round(myOhBot.servoProps[j].restAng - pose.servoValues[j]) / 100.) + myOhBot.servoProps[j].offset;
 
                     //easing function doesn't work if duration is < 200 ms
                     //so just complete the action;
@@ -264,7 +200,7 @@ void loop() {
                     Serial.print(" ");
                     
                     if (commands[commandIndex].actions[i].duration < 200) {
-                      servoProps[j].currentAng = targetAng;
+                      myOhBot.servoProps[j].currentAng = targetAng;
                       commands[commandIndex].actions[i].complete = true;
                       Serial.println(" ");
                     } else {
@@ -273,11 +209,11 @@ void loop() {
                       qdio.duration(commands[commandIndex].actions[i].duration / 1000.);
 
                       float step = qdio.get((now - commands[commandIndex].actions[i].timestamp - cues[c].timestamp) / 1000.);
-                      ang = round((targetAng - servoProps[j].currentAng)*step) + servoProps[j].currentAng;
+                      ang = round((targetAng - myOhBot.servoProps[j].currentAng)*step) + myOhBot.servoProps[j].currentAng;
 
                       //when targetAngle is reached, set currentAng = targetAng;
                       if (ang == targetAng) {
-                        servoProps[j].currentAng = targetAng;
+                        myOhBot.servoProps[j].currentAng = targetAng;
                         commands[commandIndex].actions[i].complete = true;
 
                         Serial.print("cue [");
@@ -301,7 +237,7 @@ void loop() {
                       Serial.println(qdio.get(step));
                     }
                   
-                    pwm.setPWM(servoProps[j].servoNum, 0, angleToPulse((int) ang));
+                    pwm.setPWM(myOhBot.servoProps[j].servoNum, 0, angleToPulse((int) ang));
 
                   }
                 }
@@ -351,7 +287,7 @@ void printServoValues() {
 }
 
 int angleToPulse(int ang){
-   int pulse = map(ang,0, 180, SERVOMIN,SERVOMAX);// map angle of 0 to 180 to Servo min and Servo max 
+   int pulse = map(ang, 0, 180, SERVOMIN, SERVOMAX);// map angle of 0 to 180 to Servo min and Servo max 
   // Serial.print("Angle: ");Serial.print(ang);
   // Serial.print(" pulse: ");Serial.println(pulse);
    return pulse;
