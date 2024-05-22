@@ -68,7 +68,6 @@ Command commands[COMMAND_LIST_SIZE] = {
   }
 };
 
-#define CUE_LIST_SIZE 20
 Cue cues[CUE_LIST_SIZE] = {
   {1000, {"blink"}},
   {1000, {"look1"}},
