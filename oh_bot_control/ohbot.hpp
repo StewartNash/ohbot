@@ -93,7 +93,7 @@ class OhBot {
 		void printServoValues();
 		
 		void setPoses(Pose* poses);
-		void setCommands(Command* command);
+		void setCommands(Command* commands);
 		void setCues(Cue* cues);
 		
 };

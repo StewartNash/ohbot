@@ -136,7 +136,9 @@ void OhBot::iterateMotion(int now) {
 					
 					// Reset action-complete flags the first time through the cue
 					if (!cues[cueIndex].started) {
-						for (int i = 0; i < ACTION)
+						for (int i = 0; i < actionListSize; i++) {
+            
+						}
 					
 					}
 					
@@ -261,11 +263,10 @@ void OhBot::setPoses(Pose* poses) {
 	this->poses = poses;
 }
 
-void OhBot::setCommands(Command* command) {
-	this->command = command;
+void OhBot::setCommands(Command* commands) {
+	this->commands = commands;
 }
 
 void OhBot::setCues(Cue* cues) {
 	this->cues = cues;
 }
-
