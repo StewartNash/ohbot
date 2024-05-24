@@ -1,12 +1,27 @@
 #ifndef OH_BOT_H
 #define OH_BOT_H
+#include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
+
+#include <Easing.h>
 
 
 #define NUM_SERVOS 7
 #define MAX_NAME_SIZE 12
 #define ACTION_LIST_SIZE 20
 #define COMMAND_LIST_SIZE 100
+#define CUE_LIST_SIZE 20
+#define POSE_LIST_SIZE 50
+
+// Depending on your servo make, the pulse width min and max may vary, you 
+// want these to be as small/large as possible without hitting the hard stop
+// for max range. You'll have to tweak them as necessary to match the servos you
+// have!
+#define SERVOMIN  150 // This is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  600 // This is the 'maximum' pulse length count (out of 4096)
+#define USMIN  600 // This is the rounded 'minimum' microsecond length based on the minimum pulse of 150
+#define USMAX  2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
+#define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
 
 
 //servo properties object
@@ -50,28 +65,37 @@ typedef struct {
   bool started;
 } Cue;
 
-class OhBot {		 
+class OhBot {
+		int cueIndex;
+		int cueListSize;
+		int commandListSize;
+		int actionListSize;
+		int poseListSize;
+		int numberOfServos;
+		
+		Pose *poses;
+		Command *commands;
+		Cue *cues;
+				
+		EasingFunc<Ease::QuadOut> qdo;
+		EasingFunc<Ease::QuadIn> qdi;
+		EasingFunc<Ease::QuadInOut> qdio;		
+		Adafruit_PWMServoDriver pwm;
+		
+		void initiatePwm();
+		int angleToPulse(int ang);	
 	public:
-		ServoProps servoProps[NUM_SERVOS]; //properties for each servo
-		OhBot() : servoProps{
-  			{0, 0, 120, 55, 0}, //head turn
-  			{1, 0, 80, 50, -15}, //head nod
-  			{8, 20, 100, 55, 0}, //eyes horizontal
-  			{3, 35, 115, 55, 0}, //eyes vertical
-  			{4, 0, 40, 25, 0}, //eyelids
-  			{5, 0, 45, 35, -20}, //top lip
-  			{6, 20, 65, 50, 0}, //bottom lip
-			}
-		{
-			//initially set the servos using the rest angle settings for each channel
-			for (int i=0; i < NUM_SERVOS; i++) {
-				servoProps[i].currentAng = servoProps[i].restAng + servoProps[i].offset;
-	  		}
-	  	
-			//for (int j=0; j < NUM_SERVOS; j++) {
-			//	pwm.setPWM(servoProps[j].servoNum, 0, angleToPulse(servoProps[j].restAng));
-			//}	  	
-		}
+		ServoProps servoProps[NUM_SERVOS]; // Properties for each servo
+		
+		OhBot();
+		OhBot(Pose* poses, Command* commands, Cue* cues);
+		void iterateMotion(int now);
+		void printServoValues();
+		
+		void setPoses(Pose* poses);
+		void setCommands(Command* command);
+		void setCues(Cue* cues);
+		
 };
 
 #endif
