@@ -25,6 +25,9 @@
 #include <string.h>
 #include <math.h>
 
+void delay(int output);
+int min(int first, int second);
+
 /*
 
 #include <avr/pgmspace.h>

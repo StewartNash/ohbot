@@ -1,7 +1,7 @@
 #ifndef OH_BOT_H
 #define OH_BOT_H
 
-#define VISUAL_STUDIO_DEBUG
+//#define VISUAL_STUDIO_DEBUG
 
 #ifdef VISUAL_STUDIO_DEBUG
 #include "Wire.h"
@@ -19,24 +19,33 @@
 #ifdef VISUAL_STUDIO_DEBUG
 #include <iostream>
 #include <string>
+#include <chrono>
 
 class Serial {
 	public:
-		void print(string output) {std::cout << output;}
-		void print(double output) {std::cout << output;}
-		void print(float output) {std::cout << output;}
-		void print(int output) {std::cout << output;}
+		static void print(std::string output) { std::cout << output; }
+		static void print(double output) { std::cout << output; }
+		static void print(float output) { std::cout << output; }
+		static void print(int output) { std::cout << output; }
 
-		void begin(int output) {}
-		void println(string output) {std::cout << output << std::endl;}
-}
+		static void begin(int output) {}
+		static void println(std::string output) { std::cout << output << std::endl; }
+		static void println(double output) { std::cout << output << std::endl; }
+		static void println(float output) { std::cout << output << std::endl; }
+		static void println(int output) { std::cout << output << std::endl; }
+
+		static bool available() { return false; }
+		static char read() { return 0; }
+} Serial;
 
 long map(long x, long in_min, long in_max, long out_min, long out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-void delay(int output) {
+//void delay(int output) {}
 
+int millis() {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 #endif
 

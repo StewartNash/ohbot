@@ -11,6 +11,10 @@
 #ifndef HT_TWEEN_EASING_EASINGBASE_H
 #define HT_TWEEN_EASING_EASINGBASE_H
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include "Types.h"
+
 namespace ht {
 namespace ease {
 
