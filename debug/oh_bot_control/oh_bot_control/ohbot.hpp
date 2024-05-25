@@ -1,12 +1,44 @@
 #ifndef OH_BOT_H
 #define OH_BOT_H
-//#include <Wire.h>
-//#include <Adafruit_PWMServoDriver.h>
+
+#define VISUAL_STUDIO_DEBUG
+
+#ifdef VISUAL_STUDIO_DEBUG
 #include "Wire.h"
 #include "Adafruit_PWMServoDriver.h"
 
-//#include <Easing.h>
+
 #include "Easing.h"
+#else
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+
+#include <Easing.h>
+#endif
+
+#ifdef VISUAL_STUDIO_DEBUG
+#include <iostream>
+#include <string>
+
+class Serial {
+	public:
+		void print(string output) {std::cout << output;}
+		void print(double output) {std::cout << output;}
+		void print(float output) {std::cout << output;}
+		void print(int output) {std::cout << output;}
+
+		void begin(int output) {}
+		void println(string output) {std::cout << output << std::endl;}
+}
+
+long map(long x, long in_min, long in_max, long out_min, long out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+void delay(int output) {
+
+}
+#endif
 
 #define NUM_SERVOS 7
 #define MAX_NAME_SIZE 12
