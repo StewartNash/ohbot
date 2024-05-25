@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Easing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_PWMServoDriver;F:\Repositories\ohbot\debug\oh_bot_control\Wire;F:\Repositories\ohbot\debug\oh_bot_control\Easing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -91,7 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Easing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_PWMServoDriver;F:\Repositories\ohbot\debug\oh_bot_control\Wire;F:\Repositories\ohbot\debug\oh_bot_control\Easing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Easing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_PWMServoDriver;F:\Repositories\ohbot\debug\oh_bot_control\Wire;F:\Repositories\ohbot\debug\oh_bot_control\Easing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -121,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Easing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_PWMServoDriver;F:\Repositories\ohbot\debug\oh_bot_control\Wire;F:\Repositories\ohbot\debug\oh_bot_control\Easing;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,8 +138,14 @@
     <ClInclude Include="ohbot.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Adafruit_PWMServoDriver\Adafruit_PWMServoDriver.vcxproj">
+      <Project>{d9687231-11a1-4077-af5f-416dd44a1486}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Easing\Easing.vcxproj">
       <Project>{33dc531f-afbb-40a7-882b-5dc45291417f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Wire\Wire.vcxproj">
+      <Project>{7a765cf7-96ef-496a-87d5-60b489e21f00}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

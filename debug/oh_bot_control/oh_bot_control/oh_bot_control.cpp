@@ -3,6 +3,9 @@
 
 #include <iostream>
 
+void setup();
+void loop();
+
 int main() {
 	bool exit = false;
 	

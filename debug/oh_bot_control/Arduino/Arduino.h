@@ -25,6 +25,8 @@
 #include <string.h>
 #include <math.h>
 
+/*
+
 #include <avr/pgmspace.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -257,4 +259,5 @@ long map(long, long, long, long, long);
 
 #include "pins_arduino.h"
 
+*/
 #endif
