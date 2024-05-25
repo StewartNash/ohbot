@@ -78,7 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_I2CDevice;F:\Repositories\ohbot\debug\oh_bot_control\Arduino;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Wire;F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_I2CDevice;F:\Repositories\ohbot\debug\oh_bot_control\Arduino;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -96,7 +96,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_I2CDevice;F:\Repositories\ohbot\debug\oh_bot_control\Arduino;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Wire;F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_I2CDevice;F:\Repositories\ohbot\debug\oh_bot_control\Arduino;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -114,7 +114,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_I2CDevice;F:\Repositories\ohbot\debug\oh_bot_control\Arduino;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Wire;F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_I2CDevice;F:\Repositories\ohbot\debug\oh_bot_control\Arduino;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -132,7 +132,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_I2CDevice;F:\Repositories\ohbot\debug\oh_bot_control\Arduino;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Repositories\ohbot\debug\oh_bot_control\Wire;F:\Repositories\ohbot\debug\oh_bot_control\Adafruit_I2CDevice;F:\Repositories\ohbot\debug\oh_bot_control\Arduino;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -154,6 +154,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Arduino\Arduino.vcxproj">
       <Project>{6dbb71ac-65f7-4f88-acda-a0d830e29b48}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Wire\Wire.vcxproj">
+      <Project>{7a765cf7-96ef-496a-87d5-60b489e21f00}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

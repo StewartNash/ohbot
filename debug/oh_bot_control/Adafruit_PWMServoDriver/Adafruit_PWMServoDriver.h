@@ -26,8 +26,8 @@
 #include "Adafruit_I2CDevice.h"
 #include "Arduino.h"
 //TODO: Why are the following needed?
-#include "../Wire/Wire.h"
-#include <cstdint>
+//#include "../Wire/Wire.h"
+//#include <cstdint>
 
 // REGISTER ADDRESSES
 #define PCA9685_MODE1 0x00      /**< Mode Register 1 */
