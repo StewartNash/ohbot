@@ -5,6 +5,12 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oh_bot_control", "oh_bot_control\oh_bot_control.vcxproj", "{B7D60FEC-B788-4A1B-89E8-0CF47A58F41F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Wire", "Wire\Wire.vcxproj", "{7A765CF7-96EF-496A-87D5-60B489E21F00}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Easing", "Easing\Easing.vcxproj", "{33DC531F-AFBB-40A7-882B-5DC45291417F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Adafruit_PWMServoDriver", "Adafruit_PWMServoDriver\Adafruit_PWMServoDriver.vcxproj", "{D9687231-11A1-4077-AF5F-416DD44A1486}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +27,30 @@ Global
 		{B7D60FEC-B788-4A1B-89E8-0CF47A58F41F}.Release|x64.Build.0 = Release|x64
 		{B7D60FEC-B788-4A1B-89E8-0CF47A58F41F}.Release|x86.ActiveCfg = Release|Win32
 		{B7D60FEC-B788-4A1B-89E8-0CF47A58F41F}.Release|x86.Build.0 = Release|Win32
+		{7A765CF7-96EF-496A-87D5-60B489E21F00}.Debug|x64.ActiveCfg = Debug|x64
+		{7A765CF7-96EF-496A-87D5-60B489E21F00}.Debug|x64.Build.0 = Debug|x64
+		{7A765CF7-96EF-496A-87D5-60B489E21F00}.Debug|x86.ActiveCfg = Debug|Win32
+		{7A765CF7-96EF-496A-87D5-60B489E21F00}.Debug|x86.Build.0 = Debug|Win32
+		{7A765CF7-96EF-496A-87D5-60B489E21F00}.Release|x64.ActiveCfg = Release|x64
+		{7A765CF7-96EF-496A-87D5-60B489E21F00}.Release|x64.Build.0 = Release|x64
+		{7A765CF7-96EF-496A-87D5-60B489E21F00}.Release|x86.ActiveCfg = Release|Win32
+		{7A765CF7-96EF-496A-87D5-60B489E21F00}.Release|x86.Build.0 = Release|Win32
+		{33DC531F-AFBB-40A7-882B-5DC45291417F}.Debug|x64.ActiveCfg = Debug|x64
+		{33DC531F-AFBB-40A7-882B-5DC45291417F}.Debug|x64.Build.0 = Debug|x64
+		{33DC531F-AFBB-40A7-882B-5DC45291417F}.Debug|x86.ActiveCfg = Debug|Win32
+		{33DC531F-AFBB-40A7-882B-5DC45291417F}.Debug|x86.Build.0 = Debug|Win32
+		{33DC531F-AFBB-40A7-882B-5DC45291417F}.Release|x64.ActiveCfg = Release|x64
+		{33DC531F-AFBB-40A7-882B-5DC45291417F}.Release|x64.Build.0 = Release|x64
+		{33DC531F-AFBB-40A7-882B-5DC45291417F}.Release|x86.ActiveCfg = Release|Win32
+		{33DC531F-AFBB-40A7-882B-5DC45291417F}.Release|x86.Build.0 = Release|Win32
+		{D9687231-11A1-4077-AF5F-416DD44A1486}.Debug|x64.ActiveCfg = Debug|x64
+		{D9687231-11A1-4077-AF5F-416DD44A1486}.Debug|x64.Build.0 = Debug|x64
+		{D9687231-11A1-4077-AF5F-416DD44A1486}.Debug|x86.ActiveCfg = Debug|Win32
+		{D9687231-11A1-4077-AF5F-416DD44A1486}.Debug|x86.Build.0 = Debug|Win32
+		{D9687231-11A1-4077-AF5F-416DD44A1486}.Release|x64.ActiveCfg = Release|x64
+		{D9687231-11A1-4077-AF5F-416DD44A1486}.Release|x64.Build.0 = Release|x64
+		{D9687231-11A1-4077-AF5F-416DD44A1486}.Release|x86.ActiveCfg = Release|Win32
+		{D9687231-11A1-4077-AF5F-416DD44A1486}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

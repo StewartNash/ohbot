@@ -18,5 +18,13 @@
     <ClCompile Include="oh_bot_control.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ohbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ohbot.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
