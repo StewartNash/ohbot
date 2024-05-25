@@ -8,7 +8,7 @@ int main() {
 	
 	setup();
 
-	while (true) {
+	while (!exit) {
 		loop();
 	}
 }
