@@ -137,12 +137,12 @@ void OhBot::iterateMotion(int now) {
 					// Reset action-complete flags the first time through the cue
 					if (!cues[cueIndex].started) {
 						for (int i = 0; i < actionListSize; i++) {
-            
+							commands[commandNumber].actions[i].complete = false;
 						}
-					
+						cues[cueIndex].started = true;					
 					}
 					
-					for (int i=0; i < actionListSize; i++) {
+					for (int i = 0; i < actionListSize; i++) {
 						if ((strlen(commands[commandNumber].actions[i].poseName) > 0) && !commands[commandNumber].actions[i].complete) {
 							// Trigger action if now is greater than timestamp and less than duration 
 							//Serial.print(">");
@@ -175,12 +175,12 @@ void OhBot::iterateMotion(int now) {
 										// Calculate desired servo angle based on milliseconds ticked
 										// pos value: 100% * (max - rest) / 100 + rest + offset 
 										// neg value: -100% * (rest - min) / 100 + min + offset 
-										int targetAng = pose.servoValues[j] >= servoProps[j].restAng?
+										int targetAng = pose.servoValues[j] >= servoProps[j].restAng ?
 										(commands[commandNumber].actions[i].value * round(pose.servoValues[j] - servoProps[j].restAng) / 100.) + servoProps[j].restAng + servoProps[j].offset :
 										(servoProps[j].restAng - commands[commandNumber].actions[i].value * round(servoProps[j].restAng - pose.servoValues[j]) / 100.) + servoProps[j].offset;
 
-										// Easing function doesn't work if duration is < 200 ms
-										// so just complete the action;
+										// Easing function doesn't work if duration is < 200 ms,
+										// so just complete the action
 										int ang = targetAng;
 
 										Serial.print("target:");
@@ -242,6 +242,9 @@ void OhBot::iterateMotion(int now) {
 					}
 					Serial.println(" ");									
 				}				
+			}
+			if (allActionsComplete) {
+				cues[cueIndex].complete = true;
 			}
 		}
 	}
