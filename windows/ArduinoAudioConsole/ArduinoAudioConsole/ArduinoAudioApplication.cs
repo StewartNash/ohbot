@@ -12,7 +12,7 @@ namespace ArduinoAudioConsole {
 			string filename = "F:\\Repositories\\temporary\\Joshua Colley singing Go The Distance [ ezmp3.cc ].mp3";
 
 			myAudio = new ArduinoAudio();
-			myAudio.PlayStream(filename);
+			myAudio.PlayFile(filename);
 		}
 	}
 }

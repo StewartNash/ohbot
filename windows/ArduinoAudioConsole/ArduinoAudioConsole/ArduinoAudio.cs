@@ -1,22 +1,48 @@
 ﻿using System;
 using System.IO;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.IO.Ports;
 using System.Threading;
 
 namespace ArduinoAudioConsole {
 	internal class ArduinoAudio {
+		
 		public void PlayFile(string filename) {
-			NAudio.Wave.Mp3FileReader reader = new NAudio.Wave.Mp3FileReader(filename);
-			NAudio.Wave.WaveStream pcm = NAudio.Wave.WaveFormatConversionStream.CreatePcmStream(reader);
-			//NAudio.Wave.WaveOut waveOut = new NAudio.Wave.WaveOut();
-			NAudio.Wave.BlockAlignReductionStream stream = new NAudio.Wave.BlockAlignReductionStream(pcm);
-			NAudio.Wave.DirectSoundOut output = new NAudio.Wave.DirectSoundOut();
-			output.Init(stream);
-			output.Play();
+			NAudio.Wave.Mp3FileReader reader;
+			NAudio.Wave.WaveStream pcm;
+			NAudio.Wave.BlockAlignReductionStream stream;
+			NAudio.Wave.DirectSoundOut output;
+
+			using (reader = new NAudio.Wave.Mp3FileReader(filename)) {
+				using (pcm = NAudio.Wave.WaveFormatConversionStream.CreatePcmStream(reader)) {
+					//NAudio.Wave.WaveOut waveOut = new NAudio.Wave.WaveOut();
+					using (stream = new NAudio.Wave.BlockAlignReductionStream(pcm)) {
+						using (output = new NAudio.Wave.DirectSoundOut()) {
+							output.Init(stream);
+							output.Play();
+							while (output.PlaybackState == NAudio.Wave.PlaybackState.Playing) {
+								Thread.Sleep(1000);
+							}
+						}
+					}
+				}
+			}
+		}
+
+
+		/*
+		public void PlayFile(string filename) {
+			NAudio.Wave.AudioFileReader audioFile;
+			NAudio.Wave.WaveOutEvent output;
+
+			using (audioFile = new NAudio.Wave.AudioFileReader(filename))
+			using (output = new NAudio.Wave.WaveOutEvent()) {
+				output.Init(audioFile);
+				output.Play();
+				while (output.PlaybackState == NAudio.Wave.PlaybackState.Playing) {
+					Thread.Sleep(1000);
+				}
+			}
 		}
 
 		public void PlayStream(string filename) {
@@ -43,8 +69,10 @@ namespace ArduinoAudioConsole {
 			waveOutEvent.Play();
 			manualResetEvent.WaitOne();
 		}
+		*/
 	}
 
+	/*
 	public sealed class FastWaveBuffer : MemoryStream, NAudio.Wave.IWaveProvider {
 		public FastWaveBuffer(NAudio.Wave.WaveFormat waveFormat, byte[] bytes) : base(bytes) {
 			WaveFormat = waveFormat;
@@ -57,4 +85,6 @@ namespace ArduinoAudioConsole {
 			get;
 		}
 	}
+	*/
+
 }
