@@ -23,6 +23,7 @@ BluetoothA2DPSource a2dp_source;
 
 // The supported audio codec in ESP32 A2DP is SBC. SBC audio stream is encoded
 // from PCM data normally formatted as 44.1kHz sampling rate, two-channel 16-bit sample data
+/*
 int32_t get_data_frames(Frame *frame, int32_t frame_count) {
     static float m_time = 0.0;
     float m_amplitude = 10000.0;  // -32,768 to 32,767
@@ -41,6 +42,57 @@ int32_t get_data_frames(Frame *frame, int32_t frame_count) {
 
     return frame_count;
 }
+*/
+
+int MIN_BUFFER = 5; // Buffer size in seconds
+int MAX_WAIT = 10; // Maximum wait time for buffering
+int BUFFER_SIZE = 256;
+
+bool isBufferReady;
+bool isLowOrder;
+
+uint8_t lowOrderByte;
+uint8_t highOrderByte;
+
+int soundBuffer[BUFFER_SIZE];
+int bufferCount = 0;
+
+int32_t get_data_frames(Frame *frame, int32_t frame_count) {
+    static float m_time = 0.0;
+    float m_amplitude = 10000.0;  // -32,768 to 32,767
+    float m_deltaTime = 1.0 / 44100.0;
+    float m_phase = 0.0;
+    float pi_2 = PI * 2.0;
+    // fill the channel data
+    for (int sample = 0; sample < frame_count; ++sample) {
+        float angle = pi_2 * c3_frequency * m_time + m_phase;
+        frame[sample].channel1 = m_amplitude * sin(angle);
+        frame[sample].channel2 = frame[sample].channel1;
+        m_time += m_deltaTime;
+    }
+
+    while (!isBufferReady && sample < frame_count) {
+      if (Serial.available()) {
+        temporary = Serial.read();
+        if (isLowOrder) {
+          lowOrderByte = temporary;
+          isLowOrder = false;
+        } else {
+          highOrderByte = temporary;
+          soundBuffer[bufferNumber++] = (((uint16_t) highOrderByte) << 8) | (uint16_t) a;
+        }
+        soundBuffer[bufferCount] = temporary;
+      }
+          frame[sample].channel2 = frame[sample].channel1 = soundBuffer[bufferNumber];
+      
+    }
+    // to prevent watchdog
+    delay(1);
+
+    return frame_count;
+}
+
+
 
 
 void setup() {
