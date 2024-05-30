@@ -14,8 +14,10 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BluetoothA2DPSource.h"
 #include <math.h> 
+
+#include "BluetoothA2DPSource.h"
+#include "Queue.hpp"
 
 #define c3_frequency  130.81
 
@@ -44,9 +46,14 @@ int32_t get_data_frames(Frame *frame, int32_t frame_count) {
 }
 */
 
-int MIN_BUFFER = 5; // Buffer size in seconds
-int MAX_WAIT = 10; // Maximum wait time for buffering
+const int MAX_SIZE = 128;
+
+Queue audioBuffer;
+
+int MIN_BUFFER = 128; // Minimum buffer samples
+int MAX_WAIT = 500; // Maximum wait time for buffering in milliseconds
 int BUFFER_SIZE = 256;
+//int BUFFER_OVERFLOW = 512; // Wrap-around size for buffer
 
 bool isBufferReady;
 bool isLowOrder;
@@ -54,42 +61,42 @@ bool isLowOrder;
 uint8_t lowOrderByte;
 uint8_t highOrderByte;
 
-int soundBuffer[BUFFER_SIZE];
+int audioBuffer[BUFFER_SIZE];
+
 int bufferCount = 0;
+int stackPointer;
 
 int32_t get_data_frames(Frame *frame, int32_t frame_count) {
-    static float m_time = 0.0;
-    float m_amplitude = 10000.0;  // -32,768 to 32,767
-    float m_deltaTime = 1.0 / 44100.0;
-    float m_phase = 0.0;
-    float pi_2 = PI * 2.0;
-    // fill the channel data
-    for (int sample = 0; sample < frame_count; ++sample) {
-        float angle = pi_2 * c3_frequency * m_time + m_phase;
-        frame[sample].channel1 = m_amplitude * sin(angle);
-        frame[sample].channel2 = frame[sample].channel1;
-        m_time += m_deltaTime;
-    }
+	int sample;
+	isBufferReady = false;
+	
+	if (bufferCount > MIN_BUFFER) {
+		isBufferReady = true;
+	} 
+	
+	while (!isBufferReady && sample < frame_count) {
+		if (Serial.available()) {
+			temporary = Serial.read();
+			if (isLowOrder) {
+				lowOrderByte = temporary;
+				isLowOrder = false;
+			} else {
+				highOrderByte = temporary;
+				audioBuffer.enqueue((((uint16_t) highOrderByte) << 8) | (uint16_t) lowOrderByte);
+				++bufferCount;
+				isLowOrder = true;          
+			}
+		}
+	}
+    
+	if (isBufferReady) {
+		frame[sample].channel2 = frame[sample].channel1 = audioBuffer.dequeue();
+		--bufferCount;
+	}
+	// to prevent watchdog
+	delay(1);
 
-    while (!isBufferReady && sample < frame_count) {
-      if (Serial.available()) {
-        temporary = Serial.read();
-        if (isLowOrder) {
-          lowOrderByte = temporary;
-          isLowOrder = false;
-        } else {
-          highOrderByte = temporary;
-          soundBuffer[bufferNumber++] = (((uint16_t) highOrderByte) << 8) | (uint16_t) a;
-        }
-        soundBuffer[bufferCount] = temporary;
-      }
-          frame[sample].channel2 = frame[sample].channel1 = soundBuffer[bufferNumber];
-      
-    }
-    // to prevent watchdog
-    delay(1);
-
-    return frame_count;
+	return frame_count;
 }
 
 
