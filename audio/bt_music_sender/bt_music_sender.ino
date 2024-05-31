@@ -27,22 +27,21 @@ BluetoothA2DPSource a2dp_source;
 // from PCM data normally formatted as 44.1kHz sampling rate, two-channel 16-bit sample data
 /*
 int32_t get_data_frames(Frame *frame, int32_t frame_count) {
-    static float m_time = 0.0;
-    float m_amplitude = 10000.0;  // -32,768 to 32,767
-    float m_deltaTime = 1.0 / 44100.0;
-    float m_phase = 0.0;
-    float pi_2 = PI * 2.0;
-    // fill the channel data
-    for (int sample = 0; sample < frame_count; ++sample) {
-        float angle = pi_2 * c3_frequency * m_time + m_phase;
-        frame[sample].channel1 = m_amplitude * sin(angle);
-        frame[sample].channel2 = frame[sample].channel1;
-        m_time += m_deltaTime;
-    }
-    // to prevent watchdog
-    delay(1);
+	static float m_time = 0.0;
+	float m_amplitude = 10000.0; // -32,768 to 32,767
+	float m_deltaTime = 1.0 / 44100.0;
+	float m_phase = 0.0;
+	float pi_2 = PI * 2.0;
+	// fill the channel data
+	for (int sample = 0; sample < frame_count; ++sample) {
+		float angle = pi_2 * c3_frequency * m_time + m_phase;
+		frame[sample].channel2 = frame[sample].channel1;
+		m_time += m_deltaTime;
+	}
+	// to prevent watchdog
+	delay(1);
 
-    return frame_count;
+	return frame_count;
 }
 */
 
@@ -55,7 +54,6 @@ int MAX_WAIT = 500; // Maximum wait time for buffering in milliseconds
 int BUFFER_SIZE = 256;
 //int BUFFER_OVERFLOW = 512; // Wrap-around size for buffer
 
-bool isBufferReady;
 bool isLowOrder;
 
 uint8_t lowOrderByte;
@@ -68,47 +66,55 @@ int stackPointer;
 
 int32_t get_data_frames(Frame *frame, int32_t frame_count) {
 	int sample;
-	isBufferReady = false;
+	
+	sample = 0;
 	
 	if (bufferCount > MIN_BUFFER) {
 		isBufferReady = true;
-	} 
+	}
 	
-	while (!isBufferReady && sample < frame_count) {
-		if (Serial.available()) {
-			temporary = Serial.read();
-			if (isLowOrder) {
-				lowOrderByte = temporary;
-				isLowOrder = false;
-			} else {
-				highOrderByte = temporary;
-				audioBuffer.enqueue((((uint16_t) highOrderByte) << 8) | (uint16_t) lowOrderByte);
-				++bufferCount;
-				isLowOrder = true;          
-			}
+	while (sample < frame_count) {
+		readSerial();
+		if (bufferCount > MIN_BUFFER) {
+			sample = popBuffer(frame, sample);
 		}
 	}
-    
-	if (isBufferReady) {
-		frame[sample].channel2 = frame[sample].channel1 = audioBuffer.dequeue();
-		--bufferCount;
-	}
+
 	// to prevent watchdog
 	delay(1);
 
 	return frame_count;
 }
 
+int popBuffer(Frame *frame, int sample) {
+	frame[sample].channel2 = frame[sample].channel1 = audioBuffer.dequeue();
+	--bufferCount;
+	
+	return sample + 1;
+}
 
-
+void readSerial() {
+	if (Serial.available()) {
+		temporary = Serial.read();
+		if (isLowOrder) {
+			lowOrderByte = temporary;
+			isLowOrder = false;
+		} else {
+			highOrderByte = temporary;
+			audioBuffer.enqueue((((uint16_t) highOrderByte) << 8) | (uint16_t) lowOrderByte);
+			++bufferCount;
+			isLowOrder = true;
+		}
+	}
+}
 
 void setup() {
-  a2dp_source.set_auto_reconnect(false);
-  a2dp_source.start("OontZ Angle 3 DS E0E", get_data_frames);  
-  a2dp_source.set_volume(30);
+	a2dp_source.set_auto_reconnect(false);
+	a2dp_source.start("OontZ Angle 3 DS E0E", get_data_frames);
+	a2dp_source.set_volume(30);
 }
 
 void loop() {
-  // to prevent watchdog in release > 1.0.6
-  delay(1000);
+	// to prevent watchdog in release > 1.0.6
+	delay(1000);
 }
