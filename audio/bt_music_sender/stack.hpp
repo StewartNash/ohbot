@@ -9,5 +9,6 @@ class Stack {
 		bool isEmpty(); 
 		bool isFull();
 		void push(int element);
+		void pop();
 		int top();
 };

@@ -19,7 +19,7 @@
 #include "BluetoothA2DPSource.h"
 #include "Queue.hpp"
 
-#define c3_frequency  130.81
+//#define c3_frequency  130.81
 
 BluetoothA2DPSource a2dp_source;
 
@@ -45,21 +45,21 @@ int32_t get_data_frames(Frame *frame, int32_t frame_count) {
 }
 */
 
-const int MAX_SIZE = 128;
+//const int MAX_SIZE = 128;
 
 Queue audioBuffer;
 
-int MIN_BUFFER = 128; // Minimum buffer samples
-int MAX_WAIT = 500; // Maximum wait time for buffering in milliseconds
-int BUFFER_SIZE = 256;
-//int BUFFER_OVERFLOW = 512; // Wrap-around size for buffer
+const int MIN_BUFFER = 128; // Minimum buffer samples
+const int MAX_WAIT = 500; // Maximum wait time for buffering in milliseconds
+const int BUFFER_SIZE = 256;
+//const int BUFFER_OVERFLOW = 512; // Wrap-around size for buffer
 
 bool isLowOrder;
 
 uint8_t lowOrderByte;
 uint8_t highOrderByte;
 
-int audioBuffer[BUFFER_SIZE];
+//int audioBuffer[BUFFER_SIZE];
 
 int bufferCount = 0;
 int stackPointer;
@@ -68,10 +68,6 @@ int32_t get_data_frames(Frame *frame, int32_t frame_count) {
 	int sample;
 	
 	sample = 0;
-	
-	if (bufferCount > MIN_BUFFER) {
-		isBufferReady = true;
-	}
 	
 	while (sample < frame_count) {
 		readSerial();
@@ -93,14 +89,20 @@ int popBuffer(Frame *frame, int sample) {
 	return sample + 1;
 }
 
-void readSerial() {
+void readSerial() {  
 	if (Serial.available()) {
+	int8_t temporary;
+
 		temporary = Serial.read();
 		if (isLowOrder) {
 			lowOrderByte = temporary;
 			isLowOrder = false;
 		} else {
 			highOrderByte = temporary;
+			if (bufferCount >= BUFFER_SIZE) { // If buffer is full, drop old data
+				audioBuffer.dequeue();
+				--bufferCount;			
+			}
 			audioBuffer.enqueue((((uint16_t) highOrderByte) << 8) | (uint16_t) lowOrderByte);
 			++bufferCount;
 			isLowOrder = true;
@@ -115,6 +117,8 @@ void setup() {
 }
 
 void loop() {
-	// to prevent watchdog in release > 1.0.6
-	delay(1000);
+	//// To prevent watchdog in release > 1.0.6
+	//delay(1000);
+	readSerial();
+	delay(100);
 }

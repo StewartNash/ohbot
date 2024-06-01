@@ -24,8 +24,8 @@ void Stack::push(int element) {
 
 void Stack::pop() {
 	if (!isEmpty()) {
-		return arr[topElement];
-		topElement--;
+		//return arr[topElement--]
+		--topElement;
 	} else {
 		// Stack is empty
 		//Serial.println("Stack is empty. Cannot pop from empty stack.");

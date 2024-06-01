@@ -2,7 +2,7 @@
 
 void Queue::enqueue(int x) {
 	// Move all elements from stack1 to stack2
-	while (!stack1.empty()) {
+	while (!stack1.isEmpty()) {
 		stack2.push(stack1.top());
 		stack1.pop();
 	}
@@ -11,7 +11,7 @@ void Queue::enqueue(int x) {
 	stack1.push(x);
 
 	// Push everything back to stack1
-	while (!stack2.empty()) {
+	while (!stack2.isEmpty()) {
 		stack1.push(stack2.top());
 		stack2.pop();
 	}
@@ -20,9 +20,9 @@ void Queue::enqueue(int x) {
 // Dequeue an item from the queue
 int Queue::dequeue() {
 	// If first stack is empty
-	if (stack1.empty()) {
+	if (stack1.isEmpty()) {
 		//Serial.println("Queue is empty.");
-		exit(0);
+		return -1;
 	}
 
 	// Return the top of stack1
