@@ -5,6 +5,8 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoAudioConsole", "ArduinoAudioConsole\ArduinoAudioConsole.csproj", "{C20DE98C-DE9A-41F3-B312-913DCBF64750}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PseudoSerialAudio", "PseudoSerialAudio\PseudoSerialAudio.csproj", "{D2830BBF-AD57-46F6-AF27-35789EEDA6D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C20DE98C-DE9A-41F3-B312-913DCBF64750}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C20DE98C-DE9A-41F3-B312-913DCBF64750}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C20DE98C-DE9A-41F3-B312-913DCBF64750}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2830BBF-AD57-46F6-AF27-35789EEDA6D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2830BBF-AD57-46F6-AF27-35789EEDA6D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2830BBF-AD57-46F6-AF27-35789EEDA6D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2830BBF-AD57-46F6-AF27-35789EEDA6D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
