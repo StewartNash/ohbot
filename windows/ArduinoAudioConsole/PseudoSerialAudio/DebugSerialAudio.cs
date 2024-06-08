@@ -6,8 +6,92 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PseudoSerialAudio {
+	struct Frame {
+		public short channel1;
+		public short channel2;
+	}
+
+	public static class Serial {
+		public static byte read() {
+			Random rnd = new Random();
+			Byte[] b = new Byte[1];
+			rnd.NextBytes(b);
+			return b[0];
+		}
+
+		public static bool available() {
+			return true;
+		}
+	}
 
 	public class DebugSerialAudio {
+		Queue audioBuffer;
+
+		const int MIN_BUFFER = 128; // Minimum buffer samples
+		const int MAX_WAIT = 500; // Maximum wait time for buffering in milliseconds
+		const int BUFFER_SIZE = 256;
+		//const int BUFFER_OVERFLOW = 512; // Wrap-around size for buffer
+
+		bool isLowOrder;
+
+		byte lowOrderByte;
+		byte highOrderByte;
+
+		//int audioBuffer[BUFFER_SIZE];
+
+		int bufferCount = 0;
+		int stackPointer;
+
+		int get_data_frames(Frame[] frame, int frame_count) {
+			short sample;
+
+			sample = 0;
+
+			while (sample < frame_count) {
+				readSerial();
+				if (bufferCount > MIN_BUFFER) {
+					sample = popBuffer(frame, sample);
+				}
+			}
+
+			// to prevent watchdog
+			delay(1);
+
+			return frame_count;
+		}
+
+		short popBuffer(Frame[] frame, short sample) {
+			frame[sample].channel2 = frame[sample].channel1 = (short)audioBuffer.dequeue();
+			--bufferCount;
+
+			return (short)(sample + 1);
+		}
+
+
+		void readSerial() {
+			if (Serial.available()) {
+				byte temporary;
+
+				temporary = Serial.read();
+				if (isLowOrder) {
+					lowOrderByte = temporary;
+					isLowOrder = false;
+				} else {
+					highOrderByte = temporary;
+					if (bufferCount >= BUFFER_SIZE) { // If buffer is full, drop old data
+						audioBuffer.dequeue();
+						--bufferCount;
+					}
+					audioBuffer.enqueue((((int)highOrderByte) << 8) | (int)lowOrderByte);
+					++bufferCount;
+					isLowOrder = true;
+				}
+			}
+		}
+
+		void delay(int delay) {
+
+		}
 
 	}
 
