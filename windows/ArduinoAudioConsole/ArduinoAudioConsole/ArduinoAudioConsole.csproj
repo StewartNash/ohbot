@@ -81,5 +81,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PseudoSerialAudio\PseudoSerialAudio.csproj">
+      <Project>{d2830bbf-ad57-46f6-af27-35789eeda6d1}</Project>
+      <Name>PseudoSerialAudio</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

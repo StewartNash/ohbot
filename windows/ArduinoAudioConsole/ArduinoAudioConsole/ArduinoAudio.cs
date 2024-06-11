@@ -7,9 +7,16 @@ using System.Threading;
 namespace ArduinoAudioConsole {
 	internal class ArduinoAudio {
 		static SerialPort mySerialPort;
+		static PseudoSerialAudio.PseudoSerialPort myPseudoSerialPort;
 
 		public ArduinoAudio(SerialPort serialPort) {
 			mySerialPort = serialPort;
+			myPseudoSerialPort = null;
+		}
+
+		public ArduinoAudio(PseudoSerialAudio.PseudoSerialPort pseudoSerialPort) {
+			myPseudoSerialPort = pseudoSerialPort;
+			mySerialPort = null;
 		}
 		
 		public void PlayFile(string filename) {
@@ -60,7 +67,11 @@ namespace ArduinoAudioConsole {
 					output = new byte[pcm.Length];
 					pcm.Position = 0;
 					pcm.Read(output, 0, output.Length);
-					mySerialPort.Write(output, 0, output.Length);
+					if (mySerialPort != null) {
+						mySerialPort.Write(output, 0, output.Length);
+					} else {
+						myPseudoSerialPort.Write(output, 0, output.Length);
+					}
 				}
 			}
 		}

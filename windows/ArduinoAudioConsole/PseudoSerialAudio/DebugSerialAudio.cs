@@ -2,13 +2,47 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PseudoSerialAudio {
-	struct Frame {
+	public class PseudoSerialPort {
+		public string PortName;
+		public int BaudRate;
+
+		DebugSerialAudio myDebugSerialAudio;
+
+		public PseudoSerialPort() {
+			myDebugSerialAudio = new DebugSerialAudio();
+		}
+
+		public void Write(byte[] output, int startIndex, int length) {
+
+		}
+
+		public void Open() {
+
+		}
+	}
+
+	public struct Frame {
 		public short channel1;
 		public short channel2;
+	}
+
+	public class BluetoothA2DPSource {
+		public void set_auto_reconnect(bool parameter) {
+
+		}
+
+		public void start(string sink, Func<Frame[], int, int> output) {
+
+		}
+
+		public void set_volume(int volume) {
+
+		}
 	}
 
 	public static class Serial {
@@ -25,6 +59,8 @@ namespace PseudoSerialAudio {
 	}
 
 	public class DebugSerialAudio {
+		BluetoothA2DPSource a2dp_source;
+
 		Queue audioBuffer;
 
 		const int MIN_BUFFER = 128; // Minimum buffer samples
@@ -87,6 +123,19 @@ namespace PseudoSerialAudio {
 					isLowOrder = true;
 				}
 			}
+		}
+
+		void setup() {
+			a2dp_source.set_auto_reconnect(false);
+			a2dp_source.start("OontZ Angle 3 DS E0E", get_data_frames);
+			a2dp_source.set_volume(30);
+		}
+
+		void loop() {
+			//// To prevent watchdog in release > 1.0.6
+			//delay(1000);
+			readSerial();
+			delay(100);
 		}
 
 		void delay(int delay) {
